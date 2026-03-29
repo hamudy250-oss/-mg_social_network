@@ -7,13 +7,41 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        body { background: #050505; color: #f8fafc; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        .glass-nav { background: rgba(15, 23, 42, 0.88); backdrop-filter: blur(16px); border-bottom: 1px solid #29415f; }
-        .card { background: #0f172a; border: 1px solid #1f2937; }
-        .card:hover { transform: translateY(-1px); }
-        .like-button { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.75rem 1rem; border-radius: 999px; transition: transform 0.2s ease, background 0.2s ease; }
-        .like-button:hover { transform: scale(1.02); background: rgba(124, 58, 237, 0.12); }
-        .comment-card { background: #111827; border: 1px solid #1f2937; }
+        html { scroll-behavior: smooth; }
+        body { background: #050505; color: #f8fafc; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding-bottom: 6rem; }
+        .glass-nav { background: rgba(15, 23, 42, 0.92); backdrop-filter: blur(18px); border-bottom: 1px solid rgba(124, 58, 237, 0.35); }
+        .glass-nav a, .glass-nav button { transition: transform 0.25s ease, background 0.25s ease, border-color 0.25s ease, color 0.25s ease; }
+        .glass-nav a:hover, .glass-nav button:hover { transform: translateY(-1px); }
+        .card { background: rgba(15, 23, 42, 0.72); border: 1px solid rgba(124, 58, 237, 0.35); backdrop-filter: blur(10px); box-shadow: 0 30px 60px rgba(0, 0, 0, 0.22); transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease; }
+        .card:hover { transform: translateY(-6px) scale(1.01); border-color: #7c3aed; }
+        .like-button { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.75rem 1rem; border-radius: 999px; transition: transform 0.25s ease, background 0.25s ease, color 0.25s ease; background: rgba(255,255,255,0.04); color: #f8fafc; border: 1px solid rgba(148, 163, 184, 0.18); }
+        .like-button:hover { transform: scale(1.03); background: rgba(124, 58, 237, 0.18); }
+        .comment-card { background: rgba(15, 23, 42, 0.9); border: 1px solid rgba(148, 163, 184, 0.15); }
+        .btn-glow { background: linear-gradient(135deg, #8b5cf6, #6366f1); color: #fff; border: 1px solid rgba(148, 163, 184, 0.2); transition: transform 0.25s ease, box-shadow 0.25s ease; }
+        .btn-glow:hover { transform: translateY(-1px); box-shadow: 0 18px 40px rgba(124, 58, 237, 0.25); }
+        .action-pill { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.8rem 1rem; border-radius: 999px; border: 1px solid rgba(148, 163, 184, 0.18); background: rgba(15, 23, 42, 0.85); color: #d8e3ff; transition: transform 0.2s ease, background 0.2s ease, border-color 0.2s ease, color 0.2s ease; }
+        .action-pill:hover { transform: translateY(-2px); background: rgba(124, 58, 237, 0.18); border-color: #7c3aed; color: #fff; }
+        .action-pill i { width: 1rem; height: 1rem; }
+        .sidebar-icons { position: fixed; top: 50%; right: 1.25rem; transform: translateY(-50%); z-index: 50; display: none; flex-direction: column; gap: 0.85rem; }
+        @media (min-width: 1024px) { .sidebar-icons { display: flex; } }
+        .sidebar-icons a { width: 3rem; height: 3rem; border-radius: 1.25rem; background: rgba(15, 23, 42, 0.88); border: 1px solid rgba(124, 58, 237, 0.22); display: inline-flex; align-items: center; justify-content: center; color: #c4b5fd; transition: transform 0.2s ease, background 0.2s ease, border-color 0.2s ease, color 0.2s ease; }
+        .sidebar-icons a:hover { background: rgba(124, 58, 237, 0.25); border-color: #7c3aed; color: #fff; transform: translateX(-4px); }
+        .bottom-nav { position: fixed; bottom: 1rem; left: 50%; transform: translateX(-50%); z-index: 60; display: flex; gap: 0.75rem; background: rgba(15, 23, 42, 0.95); border: 1px solid rgba(124, 58, 237, 0.35); border-radius: 999px; padding: 0.75rem 0.9rem; box-shadow: 0 30px 50px rgba(0, 0, 0, 0.35); backdrop-filter: blur(20px); }
+        .bottom-nav a { width: 3rem; height: 3rem; display: inline-flex; align-items: center; justify-content: center; border-radius: 999px; background: rgba(15, 23, 42, 0.92); color: #c4b5fd; transition: transform 0.2s ease, background 0.2s ease, color 0.2s ease; }
+        .bottom-nav a:hover { transform: scale(1.05); background: #7c3aed; color: #fff; }
+        .bottom-nav .badge { position: absolute; top: 0.4rem; right: 0.35rem; width: 0.55rem; height: 0.55rem; border-radius: 999px; background: #ef4444; box-shadow: 0 0 0 3px rgba(15, 23, 42, 0.92); }
+        .skeleton-card { position: relative; overflow: hidden; background: rgba(148, 163, 184, 0.06); border: 1px solid rgba(148, 163, 184, 0.15); border-radius: 1.75rem; min-height: 13rem; }
+        .skeleton-card::before { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.12), transparent); transform: translateX(-100%); animation: shimmer 1.5s infinite; }
+        .skeleton-line { height: 0.9rem; border-radius: 999px; background: rgba(255,255,255,0.08); margin-bottom: 1rem; }
+        .skeleton-line.short { width: 40%; }
+        .skeleton-line.medium { width: 60%; }
+        .skeleton-line.long { width: 90%; }
+        @keyframes shimmer { 100% { transform: translateX(100%); } }
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: rgba(15, 23, 42, 0.55); }
+        ::-webkit-scrollbar-thumb { background: rgba(124, 58, 237, 0.6); border-radius: 999px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(124, 58, 237, 0.8); }
+        * { scrollbar-width: thin; scrollbar-color: rgba(124, 58, 237, 0.6) rgba(15, 23, 42, 0.55); }
     </style>
 </head>
 <body class="min-h-screen bg-[#050505]">
@@ -58,6 +86,35 @@
             </div>
         </div>
     </nav>
+
+    <aside class="sidebar-icons" aria-label="شريط التنقل الجانبي">
+        <a href="{% url 'home' %}" title="الرئيسية"><i class="fas fa-home"></i></a>
+        <a href="{% url 'conversations' %}" title="الرسائل"><i class="fas fa-comment-dots"></i></a>
+        <a href="{% url 'notifications' %}" title="الإشعارات"><i class="fas fa-bell"></i></a>
+        <a href="{% if request.user.is_authenticated %}{% url 'profile_detail' request.user.username %}{% else %}{% url 'login' %}{% endif %}" title="الملف الشخصي"><i class="fas fa-user-circle"></i></a>
+        <a href="{% if request.user.is_authenticated %}{% url 'profile_detail' request.user.username %}{% else %}{% url 'login' %}{% endif %}" title="الإعدادات"><i class="fas fa-cog"></i></a>
+    </aside>
+
+    <div id="skeleton-loader" class="container mx-auto px-4 py-8 space-y-6">
+        <div class="skeleton-card rounded-3xl p-6">
+            <div class="skeleton-line long"></div>
+            <div class="skeleton-line medium"></div>
+            <div class="skeleton-line"></div>
+            <div class="skeleton-line short"></div>
+        </div>
+        <div class="skeleton-card rounded-3xl p-6">
+            <div class="skeleton-line long"></div>
+            <div class="skeleton-line medium"></div>
+            <div class="skeleton-line"></div>
+            <div class="skeleton-line short"></div>
+        </div>
+        <div class="skeleton-card rounded-3xl p-6">
+            <div class="skeleton-line long"></div>
+            <div class="skeleton-line medium"></div>
+            <div class="skeleton-line"></div>
+            <div class="skeleton-line short"></div>
+        </div>
+    </div>
 
     <main class="container mx-auto px-4 py-8 grid grid-cols-1 lg:grid-cols-12 gap-6">
         <section class="lg:col-span-8 space-y-5">
@@ -123,7 +180,9 @@
                                 تقرير
                             </a>
                             {% endif %}
-                            <span class="inline-flex items-center gap-2"><i class="fas fa-share"></i> مشاركة</span>
+                            <button type="button" class="action-pill"><i class="fas fa-share"></i> مشاركة</button>
+                            <button type="button" class="action-pill"><i class="fas fa-bookmark"></i> حفظ</button>
+                            <button type="button" class="action-pill"><i class="fas fa-chart-line"></i> تحليل</button>
                         </div>
 
                         <div class="comment-panel mt-6 hidden" id="comments-{{ post.pk }}">
@@ -187,6 +246,14 @@
         </aside>
     </main>
 
+    <div class="bottom-nav lg:hidden" role="navigation" aria-label="تنقل أسفل الشاشة">
+        <a href="{% url 'home' %}" title="الرئيسية"><i class="fas fa-home"></i></a>
+        <a href="{% url 'conversations' %}" title="الرسائل"><i class="fas fa-comment-dots"></i>{% if unread_messages_count %}<span class="badge"></span>{% endif %}</a>
+        <a href="{% url 'notifications' %}" title="الإشعارات"><i class="fas fa-bell"></i></a>
+        <a href="{% url 'profile_detail' request.user.username %}" title="الملف الشخصي"><i class="fas fa-user"></i></a>
+        <a href="{% url 'profile_detail' request.user.username %}" title="الإعدادات"><i class="fas fa-cog"></i></a>
+    </div>
+
     <div id="report-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/70 px-4 py-8">
         <div class="w-full max-w-lg rounded-[28px] bg-[#0f172a] border border-slate-800 p-6 shadow-deep">
             <div class="flex items-center justify-between gap-4">
@@ -225,6 +292,10 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
+            const skeletonLoader = document.getElementById('skeleton-loader');
+            if (skeletonLoader) {
+                skeletonLoader.style.display = 'none';
+            }
             document.querySelectorAll('.like-form').forEach(form => {
                 form.addEventListener('submit', async event => {
                     event.preventDefault();
