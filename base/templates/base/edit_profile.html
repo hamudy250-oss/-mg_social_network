@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تعديل الملف الشخصي | MG Social</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { background: #0b0e14; color: #e2e8f0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .glass-card { background: rgba(15, 23, 42, 0.9); backdrop-filter: blur(18px); border: 1px solid rgba(124, 58, 237, 0.22); }
+        .input-field { background: #0b1120; border: 1px solid #1f2937; color: #e2e8f0; }
+        .input-field:focus { border-color: #7c3aed; box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.12); }
+        .avatar-uploader { width: 5.5rem; height: 5.5rem; border-radius: 9999px; overflow: hidden; border: 3px solid rgba(124, 58, 237, 0.6); background: #111827; }
+        .cover-uploader { min-height: 10rem; border-radius: 1.5rem; overflow: hidden; background: #111827; border: 1px solid rgba(124, 58, 237, 0.25); }
+        .file-input { display: none; }
+        .upload-pill { display: inline-flex; align-items: center; gap: 0.6rem; padding: 0.95rem 1.2rem; border-radius: 999px; background: rgba(124, 58, 237, 0.15); color: #d8d8ff; border: 1px solid rgba(124, 58, 237, 0.35); cursor: pointer; transition: background 0.2s ease, transform 0.2s ease; }
+        .upload-pill:hover { background: rgba(124, 58, 237, 0.28); transform: translateY(-1px); }
+        .top-bar a, .top-bar button { transition: transform 0.2s ease, background 0.2s ease, opacity 0.2s ease; }
+        .top-bar a:hover, .top-bar button:hover { transform: translateY(-1px); }
+    </style>
+</head>
+<body class="min-h-screen bg-[#0b0e14] pb-10">
+    <div class="container mx-auto px-4 py-6">
+        <div class="glass-card rounded-[32px] p-6 shadow-[0_35px_80px_-40px_rgba(0,0,0,0.75)]">
+            <div class="top-bar flex items-center justify-between gap-4">
+                <a href="{% url 'profile_detail' request.user.username %}" class="inline-flex items-center gap-2 rounded-3xl border border-slate-700 bg-[#111827] px-4 py-3 text-sm text-slate-200 hover:bg-[#171a2d]">
+                    إلغاء
+                </a>
+                <button type="submit" form="edit-profile-form" class="inline-flex items-center gap-2 rounded-3xl bg-[#7c3aed] px-5 py-3 text-sm font-semibold text-white hover:bg-[#8b5cf6]">حفظ</button>
+            </div>
+            <div class="mt-8 space-y-8">
+                <form id="edit-profile-form" method="post" enctype="multipart/form-data" class="space-y-8">
+                    {% csrf_token %}
+                    <div class="grid gap-6 lg:grid-cols-[auto_1fr] lg:items-center">
+                        <div class="flex flex-col items-center gap-4">
+                            <div class="avatar-uploader relative">
+                                {% if request.user.profile.avatar %}
+                                <img src="{{ request.user.profile.avatar.url }}" alt="Avatar" class="h-full w-full object-cover" />
+                                {% else %}
+                                <div class="flex h-full w-full items-center justify-center bg-[#0f172a] text-3xl font-bold text-white">{{ request.user.username|slice:":1"|upper }}</div>
+                                {% endif %}
+                                <label for="id_avatar" class="absolute bottom-0 right-0 inline-flex items-center justify-center h-10 w-10 rounded-full bg-[#7c3aed] text-white shadow-lg cursor-pointer">
+                                    <i class="fas fa-pencil-alt"></i>
+                                </label>
+                            </div>
+                            <label class="upload-pill" for="id_avatar">
+                                <i class="fas fa-camera"></i> تغيير الصورة
+                            </label>
+                        </div>
+                        <div class="space-y-3">
+                            <h1 class="text-2xl font-bold text-white">تعديل الملف الشخصي</h1>
+                            <p class="text-sm text-slate-400">قم بتحديث صورتك الشخصية، صورة الغلاف، ونبذة التعريف الخاصة بك.</p>
+                        </div>
+                    </div>
+
+                    <div class="cover-uploader relative overflow-hidden">
+                        {% if request.user.profile.cover_photo %}
+                        <img src="{{ request.user.profile.cover_photo.url }}" alt="Cover" class="h-full w-full object-cover" />
+                        {% else %}
+                        <div class="flex h-full w-full flex-col items-center justify-center gap-3 bg-[#111827] px-6 py-10 text-center text-slate-400">
+                            <i class="fas fa-image text-3xl text-purple-300"></i>
+                            <div>
+                                <p class="text-sm font-medium text-white">صورة الغلاف</p>
+                                <p class="text-xs text-slate-400">أضف غلافًا أنيقًا لملفك الشخصي.</p>
+                            </div>
+                        </div>
+                        {% endif %}
+                        <label for="id_cover_photo" class="absolute bottom-4 left-4 inline-flex items-center gap-2 rounded-full bg-[#111827]/90 px-4 py-3 text-sm text-slate-100 border border-slate-700 cursor-pointer hover:bg-[#1f2937]">
+                            <i class="fas fa-cloud-upload-alt"></i> تغيير الغلاف
+                        </label>
+                    </div>
+
+                    <div class="grid gap-5">
+                        <div>
+                            <label for="id_bio" class="block text-sm font-medium text-slate-300">نبذة</label>
+                            {{ form.bio }}
+                        </div>
+                        <div>
+                            <label for="id_location" class="block text-sm font-medium text-slate-300">الموقع</label>
+                            {{ form.location }}
+                        </div>
+                        <div>
+                            <label for="id_website" class="block text-sm font-medium text-slate-300">الموقع الإلكتروني</label>
+                            {{ form.website }}
+                        </div>
+                        <div class="grid gap-4 sm:grid-cols-2">
+                            <div>
+                                <label class="block text-sm font-medium text-slate-300">الصورة الشخصية</label>
+                                {{ form.avatar }}
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-slate-300">صورة الغلاف</label>
+                                {{ form.cover_photo }}
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

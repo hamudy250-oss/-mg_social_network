@@ -19,6 +19,7 @@ from .views import (
     submit_report,
     toggle_follow,
     toggle_like,
+    edit_profile,
 )
 
 urlpatterns = [
@@ -31,6 +32,7 @@ urlpatterns = [
     path('reports/<int:report_id>/dismiss/', dismiss_report, name='dismiss_report'),
     path('conversations/', conversations, name='conversations'),
     path('post/create/', create_post, name='post_create'),
+    path('profile/edit/', edit_profile, name='edit_profile'),
     path('conversations/start/<str:username>/', start_conversation, name='start_conversation'),
     path('conversations/<int:thread_id>/', conversation_detail, name='conversation_detail'),
     path('login/', login_view, name='login'),

@@ -11,6 +11,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.template.loader import render_to_string
 from django.utils import timezone
 
+from .forms import ProfileForm
 from .models import Comment, DirectMessage, DirectMessageThread, Like, Notification, Post, Profile, Report
 
 User = get_user_model()
@@ -407,6 +408,24 @@ def start_conversation(request, username):
 
     thread = get_or_create_dm_thread(request.user, target_user)
     return redirect('conversation_detail', thread_id=thread.pk)
+
+
+@login_required(login_url='login')
+def edit_profile(request):
+    profile, _ = Profile.objects.get_or_create(user=request.user)
+    if request.method == 'POST':
+        form = ProfileForm(request.POST, request.FILES, instance=profile)
+        if form.is_valid():
+            form.save()
+            return redirect('profile_detail', username=request.user.username)
+    else:
+        form = ProfileForm(instance=profile)
+
+    context = {
+        'form': form,
+    }
+    context.update(get_notifications_context(request))
+    return render(request, 'base/edit_profile.html', context)
 
 
 @login_required(login_url='login')

@@ -69,6 +69,13 @@
                         </a>
                     </div>
                     {% endif %}
+                    {% if request.user.is_authenticated and request.user == profile_owner %}
+                    <div class="mt-4">
+                        <a href="{% url 'edit_profile' %}" class="inline-flex items-center gap-2 rounded-full border border-purple-500 bg-[#111827] px-5 py-3 text-sm font-semibold text-purple-300 hover:bg-[#171a2d]">
+                            <i class="fas fa-edit"></i> تعديل الملف الشخصي
+                        </a>
+                    </div>
+                    {% endif %}
                 </div>
                 <div class="mt-8 grid gap-4 md:grid-cols-2">
                     <div class="rounded-[24px] bg-[#0b1120] p-5">
