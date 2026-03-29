@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تسجيل الدخول | MG Social</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { background: #050505; color: #f8fafc; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .glass-panel { background: rgba(15, 23, 42, 0.92); border: 1px solid rgba(148, 163, 184, 0.2); backdrop-filter: blur(16px); }
+    </style>
+</head>
+<body>
+    <div class="min-h-screen flex items-center justify-center px-4 py-10">
+        <div class="glass-panel max-w-md w-full p-8 rounded-3xl shadow-2xl">
+            <h1 class="text-3xl font-bold mb-4 text-white">تسجيل الدخول</h1>
+            <p class="text-gray-400 mb-8">أدخل بياناتك للوصول إلى لوحة MG Social.</p>
+            <form method="post" novalidate>
+                {% csrf_token %}
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-gray-300 text-sm mb-2">اسم المستخدم</label>
+                        {{ form.username }}
+                    </div>
+                    <div>
+                        <label class="block text-gray-300 text-sm mb-2">كلمة المرور</label>
+                        {{ form.password }}
+                    </div>
+                    {% if form.non_field_errors %}
+                        <div class="text-red-400 text-sm mt-2">{{ form.non_field_errors }}</div>
+                    {% endif %}
+                </div>
+                <button type="submit" class="mt-8 w-full btn-glow px-4 py-3 rounded-xl text-white font-semibold">دخول الآن</button>
+            </form>
+            <p class="mt-6 text-gray-500 text-sm">عد إلى <a href="{% url 'home' %}" class="text-purple-400 hover:underline">الصفحة الرئيسية</a></p>
+        </div>
+    </div>
+</body>
+</html>
