@@ -330,3 +330,15 @@ class DirectMessage(models.Model):
 
     def __str__(self):
         return f'Message from {self.sender.username} in thread {self.thread.pk}'
+
+    @property
+    def receiver(self):
+        return self.thread.participants.exclude(pk=self.sender.pk).first()
+
+    @property
+    def body(self):
+        return self.content
+
+    @property
+    def is_read(self):
+        return self.read

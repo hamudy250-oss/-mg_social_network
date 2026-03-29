@@ -62,7 +62,12 @@
                         </div>
                     </div>
                     {% if request.user.is_authenticated and request.user != profile_owner %}
-                    <a href="{% url 'toggle_follow' profile_owner.username %}" class="inline-flex items-center rounded-full bg-gradient-to-r from-purple-500 to-fuchsia-500 px-5 py-3 text-sm font-semibold text-white transition hover:opacity-90">{% if is_following %}إلغاء المتابعة{% else %}متابعة{% endif %}</a>
+                    <div class="flex flex-wrap items-center gap-3">
+                        <a href="{% url 'toggle_follow' profile_owner.username %}" class="inline-flex items-center rounded-full bg-gradient-to-r from-purple-500 to-fuchsia-500 px-5 py-3 text-sm font-semibold text-white transition hover:opacity-90">{% if is_following %}إلغاء المتابعة{% else %}متابعة{% endif %}</a>
+                        <a href="{% url 'start_conversation' profile_owner.username %}" class="inline-flex items-center gap-2 rounded-full border border-cyan-500 bg-[#111827] px-5 py-3 text-sm font-semibold text-cyan-300 hover:bg-[#0f172a]">
+                            <i class="fas fa-paper-plane"></i> إرسال رسالة
+                        </a>
+                    </div>
                     {% endif %}
                 </div>
                 <div class="mt-8 grid gap-4 md:grid-cols-2">

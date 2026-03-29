@@ -17,11 +17,16 @@ User = get_user_model()
 
 
 def get_notifications_context(request):
-    unread_count = 0
+    unread_notifications = 0
+    unread_messages = 0
     if request.user.is_authenticated:
-        unread_count = request.user.notifications.filter(read=False).count()
+        unread_notifications = request.user.notifications.filter(read=False).count()
+        unread_messages = DirectMessage.objects.filter(
+            thread__participants=request.user
+        ).exclude(sender=request.user).filter(read=False).count()
     return {
-        'unread_notifications_count': unread_count,
+        'unread_notifications_count': unread_notifications,
+        'unread_messages_count': unread_messages,
     }
 
 
@@ -324,8 +329,20 @@ def conversations(request):
         return redirect('login')
 
     threads = request.user.dm_threads.prefetch_related('participants', 'messages__sender').order_by('-created_at')
+    thread_list = []
+    for thread in threads:
+        partner = thread.get_other_user(request.user)
+        last_message = thread.messages.order_by('-created_at').select_related('sender').first()
+        unread_count = thread.messages.exclude(sender=request.user).filter(read=False).count()
+        thread_list.append({
+            'thread': thread,
+            'partner': partner,
+            'last_message': last_message,
+            'unread_count': unread_count,
+        })
+
     context = {
-        'threads': threads,
+        'threads': thread_list,
     }
     context.update(get_notifications_context(request))
     return render(request, 'base/conversations.html', context)
@@ -348,6 +365,7 @@ def conversation_detail(request, thread_id):
             )
         return redirect('conversation_detail', thread_id=thread.pk)
 
+    thread.messages.exclude(sender=request.user).filter(read=False).update(read=True)
     messages = thread.messages.select_related('sender').all()
     context = {
         'thread': thread,
