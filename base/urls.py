@@ -1,8 +1,42 @@
 from django.urls import path
-from .views import home, login_view, logout_view
+from .views import (
+    admin_dashboard,
+    create_comment,
+    conversation_detail,
+    conversations,
+    delete_report_post,
+    dismiss_report,
+    home,
+    load_more_posts,
+    login_view,
+    logout_view,
+    notifications_view,
+    post_detail,
+    profile_detail,
+    search,
+    start_conversation,
+    submit_report,
+    toggle_follow,
+    toggle_like,
+)
 
 urlpatterns = [
     path('', home, name='home'),
+    path('search/', search, name='search'),
+    path('notifications/', notifications_view, name='notifications'),
+    path('admin-dashboard/', admin_dashboard, name='admin_dashboard'),
+    path('report/', submit_report, name='submit_report'),
+    path('reports/<int:report_id>/delete-post/', delete_report_post, name='delete_report_post'),
+    path('reports/<int:report_id>/dismiss/', dismiss_report, name='dismiss_report'),
+    path('conversations/', conversations, name='conversations'),
+    path('conversations/start/<str:username>/', start_conversation, name='start_conversation'),
+    path('conversations/<int:thread_id>/', conversation_detail, name='conversation_detail'),
     path('login/', login_view, name='login'),
     path('logout/', logout_view, name='logout'),
+    path('load-more/', load_more_posts, name='load_more_posts'),
+    path('post/<int:pk>/like/', toggle_like, name='toggle_like'),
+    path('post/<int:pk>/comment/', create_comment, name='create_comment'),
+    path('post/<int:pk>/', post_detail, name='post_detail'),
+    path('profile/<str:username>/follow/', toggle_follow, name='toggle_follow'),
+    path('profile/<str:username>/', profile_detail, name='profile_detail'),
 ]

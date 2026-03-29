@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>بحث عن "{{ query }}" | MG Social</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { background: #0b0e14; color: #e2e8f0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .glass { background: rgba(15, 23, 42, 0.88); backdrop-filter: blur(18px); border: 1px solid rgba(148, 163, 184, 0.12); }
+    </style>
+</head>
+<body class="min-h-screen bg-[#0b0e14]">
+    <nav class="glass sticky top-0 z-50 px-4 py-4">
+        <div class="container mx-auto flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+            <div class="flex items-center gap-3">
+                <div class="h-12 w-12 rounded-3xl bg-gradient-to-br from-violet-500 to-sky-500 flex items-center justify-center text-xl font-bold text-white">MG</div>
+                <div>
+                    <h1 class="text-lg font-bold text-white">MG Social</h1>
+                    <p class="text-sm text-slate-400">نتائج البحث</p>
+                </div>
+            </div>
+            <div class="flex flex-wrap items-center gap-3">
+                <a href="{% url 'home' %}" class="rounded-2xl bg-[#111827] px-4 py-3 text-sm text-slate-200 hover:bg-[#17203a]">الرئيسية</a>
+                <a href="{% url 'notifications' %}" class="rounded-2xl bg-[#111827] px-4 py-3 text-sm text-slate-200 hover:bg-[#17203a]">الإشعارات {% if unread_notifications_count %}<span class="ml-2 inline-flex h-3 w-3 rounded-full bg-red-500"></span>{% endif %}</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container mx-auto px-4 py-8">
+        <div class="glass rounded-[32px] border border-slate-800 p-6">
+            <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                    <h2 class="text-3xl font-bold text-white">نتائج البحث</h2>
+                    <p class="mt-2 text-slate-400">عرض المستخدمين والمنشورات المطابقة لـ "{{ query }}".</p>
+                </div>
+                <form method="get" action="{% url 'search' %}" class="flex w-full max-w-md items-center gap-2 rounded-2xl border border-slate-700 bg-[#111827] px-3 py-2">
+                    <input type="search" name="q" placeholder="ابحث عن مستخدم أو منشور" value="{{ query }}" class="w-full bg-transparent text-sm text-white outline-none placeholder:text-slate-500" />
+                    <button type="submit" class="text-slate-200"><i class="fas fa-search"></i></button>
+                </form>
+            </div>
+
+            <div class="mt-8 grid gap-6 lg:grid-cols-2">
+                <section>
+                    <h3 class="text-xl font-semibold text-white">المستخدمون</h3>
+                    <div class="mt-4 space-y-3">
+                        {% for user in users %}
+                        <a href="{% url 'profile_detail' user.username %}" class="block rounded-[24px] border border-slate-800 bg-[#0f172a] p-4 transition hover:border-purple-500">
+                            <div class="flex items-center justify-between gap-3">
+                                <div>
+                                    <h4 class="text-base font-semibold text-white">{{ user.username }}</h4>
+                                    <p class="text-sm text-slate-400">{{ user.profile.bio|default:'لا توجد نبذة بعد.' }}</p>
+                                </div>
+                                <div class="rounded-full bg-slate-800 px-3 py-1 text-sm text-slate-300">عرض الملف</div>
+                            </div>
+                        </a>
+                        {% empty %}
+                        <div class="rounded-[24px] border border-slate-800 bg-[#0f172a] p-5 text-slate-400">لا يوجد مستخدمون مطابقون.</div>
+                        {% endfor %}
+                    </div>
+                </section>
+
+                <section>
+                    <h3 class="text-xl font-semibold text-white">المنشورات</h3>
+                    <div class="mt-4 space-y-3">
+                        {% for post in posts %}
+                        <a href="{% url 'post_detail' post.pk %}" class="block rounded-[24px] border border-slate-800 bg-[#0f172a] p-4 transition hover:border-purple-500">
+                            <h4 class="text-base font-semibold text-white">{{ post.title }}</h4>
+                            <p class="mt-2 text-sm text-slate-400">{{ post.content|truncatewords:25 }}</p>
+                            <div class="mt-3 flex items-center gap-3 text-xs text-slate-500">
+                                <span><i class="fas fa-user"></i> {{ post.author.username }}</span>
+                                <span><i class="fas fa-heart"></i> {{ post.likes_count }}</span>
+                            </div>
+                        </a>
+                        {% empty %}
+                        <div class="rounded-[24px] border border-slate-800 bg-[#0f172a] p-5 text-slate-400">لا توجد منشورات مطابقة.</div>
+                        {% endfor %}
+                    </div>
+                </section>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

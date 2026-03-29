@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الإشعارات | MG Social</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { background: #0b0e14; color: #e2e8f0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .glass { background: rgba(15, 23, 42, 0.9); backdrop-filter: blur(18px); border: 1px solid rgba(148, 163, 184, 0.12); }
+    </style>
+</head>
+<body class="min-h-screen bg-[#0b0e14]">
+    <nav class="glass sticky top-0 z-50 px-4 py-4">
+        <div class="container mx-auto flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+            <div class="flex items-center gap-3">
+                <div class="h-12 w-12 rounded-3xl bg-gradient-to-br from-violet-500 to-sky-500 flex items-center justify-center text-xl font-bold text-white">MG</div>
+                <div>
+                    <h1 class="text-lg font-bold text-white">MG Social</h1>
+                    <p class="text-sm text-slate-400">لوحة الإشعارات</p>
+                </div>
+            </div>
+            <div class="flex flex-wrap items-center gap-3">
+                <a href="{% url 'home' %}" class="rounded-2xl bg-[#111827] px-4 py-3 text-sm text-slate-200 hover:bg-[#17203a]">الرئيسية</a>
+                <form method="get" action="{% url 'search' %}" class="flex w-full max-w-md items-center gap-2 rounded-2xl border border-slate-700 bg-[#111827] px-3 py-2">
+                    <input type="search" name="q" placeholder="ابحث عن مستخدم أو منشور" value="{{ request.GET.q|default:'' }}" class="w-full bg-transparent text-sm text-white outline-none placeholder:text-slate-500" />
+                    <button type="submit" class="text-slate-200"><i class="fas fa-search"></i></button>
+                </form>
+                <div class="inline-flex items-center gap-3 rounded-2xl bg-[#111827] px-4 py-3 text-sm text-slate-200">
+                    <i class="fas fa-bell text-lg"></i>
+                    الإشعارات
+                    {% if unread_notifications_count %}
+                    <span class="ml-2 inline-flex h-3 w-3 rounded-full bg-red-500"></span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container mx-auto px-4 py-8">
+        <div class="glass rounded-[32px] border border-slate-800 p-6 shadow-[0_30px_80px_-40px_rgba(0,0,0,0.75)]">
+            <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                    <h2 class="text-3xl font-bold text-white">الإشعارات</h2>
+                    <p class="text-sm text-slate-400">تابع ما يحدث حول منشوراتك ومتابعيك.</p>
+                </div>
+                <form method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="rounded-full bg-violet-500 px-5 py-3 text-sm font-semibold text-white transition hover:bg-violet-400">وضع الكل كمقروء</button>
+                </form>
+            </div>
+
+            <div class="mt-8 space-y-4">
+                {% for notification in notifications %}
+                <div class="rounded-[26px] border border-slate-800 bg-[#111827] p-5 transition hover:border-purple-500">
+                    <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                        <div>
+                            <p class="text-sm text-slate-300">{{ notification.label }}</p>
+                            <p class="mt-2 text-xs text-slate-500">{{ notification.created_at|timesince }} قبل</p>
+                        </div>
+                        <span class="rounded-full px-3 py-1 text-xs font-semibold {% if notification.read %}bg-slate-700 text-slate-300{% else %}bg-emerald-500/15 text-emerald-300{% endif %}">{% if notification.read %}مقروء{% else %}جديد{% endif %}</span>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="rounded-[26px] border border-slate-800 bg-[#111827] p-6 text-center text-slate-400">لا توجد إشعارات حتى الآن. تابع المجتمع واستعد للتفاعل.</div>
+                {% endfor %}
+            </div>
+        </div>
+    </main>
+</body>
+</html>
