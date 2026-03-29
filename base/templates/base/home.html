@@ -26,10 +26,12 @@
         @media (min-width: 1024px) { .sidebar-icons { display: flex; } }
         .sidebar-icons a { width: 3rem; height: 3rem; border-radius: 1.25rem; background: rgba(15, 23, 42, 0.88); border: 1px solid rgba(124, 58, 237, 0.22); display: inline-flex; align-items: center; justify-content: center; color: #c4b5fd; transition: transform 0.2s ease, background 0.2s ease, border-color 0.2s ease, color 0.2s ease; }
         .sidebar-icons a:hover { background: rgba(124, 58, 237, 0.25); border-color: #7c3aed; color: #fff; transform: translateX(-4px); }
-        .bottom-nav { position: fixed; bottom: 1rem; left: 50%; transform: translateX(-50%); z-index: 60; display: flex; gap: 0.75rem; background: rgba(15, 23, 42, 0.95); border: 1px solid rgba(124, 58, 237, 0.35); border-radius: 999px; padding: 0.75rem 0.9rem; box-shadow: 0 30px 50px rgba(0, 0, 0, 0.35); backdrop-filter: blur(20px); }
-        .bottom-nav a { width: 3rem; height: 3rem; display: inline-flex; align-items: center; justify-content: center; border-radius: 999px; background: rgba(15, 23, 42, 0.92); color: #c4b5fd; transition: transform 0.2s ease, background 0.2s ease, color 0.2s ease; }
-        .bottom-nav a:hover { transform: scale(1.05); background: #7c3aed; color: #fff; }
-        .bottom-nav .badge { position: absolute; top: 0.4rem; right: 0.35rem; width: 0.55rem; height: 0.55rem; border-radius: 999px; background: #ef4444; box-shadow: 0 0 0 3px rgba(15, 23, 42, 0.92); }
+        .bottom-nav { position: fixed; bottom: 1rem; left: 50%; transform: translateX(-50%); z-index: 60; display: flex; gap: 0.85rem; background: #0b0e14; border: 1px solid rgba(124, 58, 237, 0.25); border-radius: 999px; padding: 0.85rem 1rem; box-shadow: 0 28px 50px rgba(0, 0, 0, 0.35); backdrop-filter: blur(16px); }
+        .bottom-nav a { width: 3.25rem; height: 3.25rem; display: inline-flex; align-items: center; justify-content: center; border-radius: 999px; background: transparent; color: #c4c8d5; transition: transform 0.2s ease, background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease; position: relative; }
+        .bottom-nav a:hover { transform: translateY(-2px); color: #7c3aed; }
+        .bottom-nav a.active { color: #7c3aed; }
+        .bottom-nav-center { width: 4rem; height: 4rem; background: #7c3aed; color: #fff; border-radius: 1.5rem; box-shadow: 0 18px 36px rgba(124, 58, 237, 0.35); }
+        .bottom-nav .badge { position: absolute; top: 0.4rem; right: 0.35rem; width: 0.55rem; height: 0.55rem; border-radius: 999px; background: #ef4444; box-shadow: 0 0 0 3px rgba(11, 14, 20, 0.95); }
         .skeleton-card { position: relative; overflow: hidden; background: rgba(148, 163, 184, 0.06); border: 1px solid rgba(148, 163, 184, 0.15); border-radius: 1.75rem; min-height: 13rem; }
         .skeleton-card::before { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.12), transparent); transform: translateX(-100%); animation: shimmer 1.5s infinite; }
         .skeleton-line { height: 0.9rem; border-radius: 999px; background: rgba(255,255,255,0.08); margin-bottom: 1rem; }
@@ -247,11 +249,17 @@
     </main>
 
     <div class="bottom-nav lg:hidden" role="navigation" aria-label="تنقل أسفل الشاشة">
-        <a href="{% url 'home' %}" title="الرئيسية"><i class="fas fa-home"></i></a>
-        <a href="{% url 'conversations' %}" title="الرسائل"><i class="fas fa-comment-dots"></i>{% if unread_messages_count %}<span class="badge"></span>{% endif %}</a>
-        <a href="{% url 'notifications' %}" title="الإشعارات"><i class="fas fa-bell"></i></a>
-        <a href="{% url 'profile_detail' request.user.username %}" title="الملف الشخصي"><i class="fas fa-user"></i></a>
-        <a href="{% url 'profile_detail' request.user.username %}" title="الإعدادات"><i class="fas fa-cog"></i></a>
+        <a href="{% url 'home' %}" class="{% if request.resolver_match.url_name == 'home' %}active{% endif %}" title="الرئيسية"><i class="fa-solid fa-house"></i></a>
+        <a href="{% url 'conversations' %}" class="{% if request.resolver_match.url_name == 'conversations' %}active{% endif %}" title="الرسائل"><i class="fa-solid fa-paper-plane"></i>{% if unread_messages_count %}<span class="badge"></span>{% endif %}</a>
+        <a href="{% url 'post_create' %}" class="bottom-nav-center{% if request.resolver_match.url_name == 'post_create' %} active{% endif %}" title="منشور جديد"><i class="fa-regular fa-square-plus"></i></a>
+        <a href="{% url 'notifications' %}" class="{% if request.resolver_match.url_name == 'notifications' %}active{% endif %}" title="الإشعارات"><i class="fa-regular fa-bell"></i>{% if unread_notifications_count %}<span class="badge"></span>{% endif %}</a>
+        <a href="{% if request.user.is_authenticated %}{% url 'profile_detail' request.user.username %}{% else %}{% url 'login' %}{% endif %}" class="{% if request.resolver_match.url_name == 'profile_detail' %}active{% endif %}" title="الملف الشخصي">
+            {% if request.user.is_authenticated and request.user.profile.avatar %}
+            <img src="{{ request.user.profile.avatar.url }}" alt="{{ request.user.username }}" class="h-8 w-8 rounded-full object-cover" />
+            {% else %}
+            <i class="fa-regular fa-user"></i>
+            {% endif %}
+        </a>
     </div>
 
     <div id="report-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/70 px-4 py-8">

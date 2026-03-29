@@ -376,6 +376,27 @@ def conversation_detail(request, thread_id):
     return render(request, 'base/conversation_detail.html', context)
 
 
+@login_required(login_url='login')
+def create_post(request):
+    errors = []
+    if request.method == 'POST':
+        title = request.POST.get('title', '').strip()
+        content = request.POST.get('content', '').strip()
+        if not title:
+            errors.append('العنوان مطلوب.')
+        if not content:
+            errors.append('المحتوى مطلوب.')
+        if not errors:
+            Post.objects.create(author=request.user, title=title, content=content)
+            return redirect('home')
+
+    context = {
+        'errors': errors,
+    }
+    context.update(get_notifications_context(request))
+    return render(request, 'base/post_create.html', context)
+
+
 def start_conversation(request, username):
     if not request.user.is_authenticated:
         return redirect('login')
