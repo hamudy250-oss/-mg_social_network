@@ -3,6 +3,13 @@ from django.db import models
 from django.urls import reverse
 from django_resized import ResizedImageField
 
+from .validators import (
+    FileSizeValidator,
+    validate_image_file_extension,
+    validate_video_file_extension,
+    validate_attachment_file_extension,
+)
+
 
 User = get_user_model()
 
@@ -18,8 +25,26 @@ class Post(models.Model):
     )
     title = models.CharField(max_length=200, verbose_name='العنوان')
     content = models.TextField(verbose_name='المحتوى')
-    image = models.ImageField(upload_to='post_images/', null=True, blank=True, verbose_name='صورة')
-    video = models.FileField(upload_to='post_videos/', null=True, blank=True, verbose_name='فيديو')
+    image = models.ImageField(
+        upload_to='post_images/',
+        null=True,
+        blank=True,
+        verbose_name='صورة',
+        validators=[
+            validate_image_file_extension,
+            FileSizeValidator(8),
+        ],
+    )
+    video = models.FileField(
+        upload_to='post_videos/',
+        null=True,
+        blank=True,
+        verbose_name='فيديو',
+        validators=[
+            validate_video_file_extension,
+            FileSizeValidator(20),
+        ],
+    )
     created_at = models.DateTimeField(auto_now_add=True)
     likes = models.ManyToManyField(
         User,
@@ -69,7 +94,14 @@ class PostImage(models.Model):
         related_name='images',
         verbose_name='صور المنشور'
     )
-    image = models.ImageField(upload_to='post_images/', verbose_name='صورة')
+    image = models.ImageField(
+        upload_to='post_images/',
+        verbose_name='صورة',
+        validators=[
+            validate_image_file_extension,
+            FileSizeValidator(8),
+        ],
+    )
     order = models.PositiveIntegerField(default=0, verbose_name='ترتيب')
 
     class Meta:
@@ -128,8 +160,26 @@ class Profile(models.Model):
         related_name='profile',
         verbose_name='المستخدم'
     )
-    avatar = models.ImageField(upload_to='profile_avatars/', null=True, blank=True, verbose_name='الصورة الشخصية')
-    cover_photo = models.ImageField(upload_to='profile_covers/', null=True, blank=True, verbose_name='صورة الغلاف')
+    avatar = models.ImageField(
+        upload_to='profile_avatars/',
+        null=True,
+        blank=True,
+        verbose_name='الصورة الشخصية',
+        validators=[
+            validate_image_file_extension,
+            FileSizeValidator(2),
+        ],
+    )
+    cover_photo = models.ImageField(
+        upload_to='profile_covers/',
+        null=True,
+        blank=True,
+        verbose_name='صورة الغلاف',
+        validators=[
+            validate_image_file_extension,
+            FileSizeValidator(4),
+        ],
+    )
     bio = models.CharField(max_length=260, blank=True, verbose_name='نبذة')
     location = models.CharField(max_length=120, blank=True, verbose_name='الموقع')
     website = models.URLField(blank=True, null=True, verbose_name='الموقع الإلكتروني')
@@ -320,7 +370,16 @@ class DirectMessage(models.Model):
         verbose_name='المرسل'
     )
     content = models.TextField(verbose_name='المحتوى')
-    attachment = models.FileField(upload_to='dm_attachments/', null=True, blank=True, verbose_name='مرفق')
+    attachment = models.FileField(
+        upload_to='dm_attachments/',
+        null=True,
+        blank=True,
+        verbose_name='مرفق',
+        validators=[
+            validate_attachment_file_extension,
+            FileSizeValidator(10),
+        ],
+    )
     read = models.BooleanField(default=False, verbose_name='مقروء')
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='تاريخ الإنشاء')
 

@@ -1,11 +1,20 @@
 import os
 from pathlib import Path
+from dotenv import load_dotenv
 
 BASE_DIR = Path(__file__).resolve().parent.parent
+dotenv_path = BASE_DIR / '.env'
+load_dotenv(dotenv_path)
 
-SECRET_KEY = 'django-insecure-change-me'
-DEBUG = True
-ALLOWED_HOSTS = ['*']
+def env_bool(name, default='False'):
+    value = os.getenv(name, default)
+    return str(value).strip().lower() in ('1', 'true', 'yes', 'on')
+
+SECRET_KEY = os.getenv('DJANGO_SECRET_KEY') or os.getenv('SECRET_KEY')
+if not SECRET_KEY:
+    raise ValueError('The SECRET_KEY environment variable is not set. Add DJANGO_SECRET_KEY or SECRET_KEY to your .env file.')
+
+DEBUG = env_bool('DJANGO_DEBUG', os.getenv('DEBUG', 'False'))
 
 INSTALLED_APPS = [
     'django.contrib.admin',

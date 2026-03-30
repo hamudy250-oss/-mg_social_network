@@ -10,6 +10,7 @@ from django.http import JsonResponse, HttpResponseBadRequest
 from django.shortcuts import get_object_or_404, redirect, render
 from django.template.loader import render_to_string
 from django.utils import timezone
+from django.views.decorators.http import require_POST
 
 from .forms import ProfileForm
 from .models import Comment, DirectMessage, DirectMessageThread, Like, Notification, Post, Profile, Report
@@ -124,11 +125,9 @@ def admin_dashboard(request):
     return render(request, 'base/dashboard.html', context)
 
 
+@login_required(login_url='login')
+@require_POST
 def submit_report(request):
-    if not request.user.is_authenticated:
-        return JsonResponse({'error': 'Login required.'}, status=403)
-    if request.method != 'POST':
-        return HttpResponseBadRequest('Invalid method')
 
     post_id = request.POST.get('post_id')
     reason = request.POST.get('reason')
@@ -153,9 +152,8 @@ def submit_report(request):
 
 
 @user_passes_test(is_admin_user, login_url='login')
+@require_POST
 def delete_report_post(request, report_id):
-    if request.method != 'POST':
-        return HttpResponseBadRequest('Invalid method')
 
     report = get_object_or_404(Report, pk=report_id)
     post = report.post
@@ -166,9 +164,8 @@ def delete_report_post(request, report_id):
 
 
 @user_passes_test(is_admin_user, login_url='login')
+@require_POST
 def dismiss_report(request, report_id):
-    if request.method != 'POST':
-        return HttpResponseBadRequest('Invalid method')
 
     report = get_object_or_404(Report, pk=report_id)
     report.status = 'dismissed'
@@ -266,6 +263,9 @@ def post_detail(request, pk):
         ),
         pk=pk,
     )
+
+    if request.method == 'POST':
+        return create_comment(request, pk)
 
     liked = post.is_liked_by(request.user) if request.user.is_authenticated else False
 
@@ -443,7 +443,7 @@ def notifications_view(request):
 
 
 @login_required(login_url='login')
-@login_required(login_url='login')
+@require_POST
 def create_comment(request, pk):
     post = get_object_or_404(Post, pk=pk)
     if request.method != 'POST':
@@ -503,6 +503,7 @@ def create_comment(request, pk):
 
 
 @login_required(login_url='login')
+@require_POST
 def toggle_follow(request, username):
     target_user = get_object_or_404(User, username=username)
     if request.user == target_user:
@@ -530,6 +531,7 @@ def toggle_follow(request, username):
 
 
 @login_required(login_url='login')
+@require_POST
 def toggle_like(request, pk):
     post = get_object_or_404(Post, pk=pk)
     like, created = Like.objects.get_or_create(user=request.user, post=post)
